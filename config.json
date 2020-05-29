@@ -1,4 +1,12 @@
 {
-    "prefix": "!?",
-    "token": ""
+    "prefix": "!",
+    "token": "",
+    "connectionUrl": "",
+    "dbName": "discord",
+    "userName": "localhost",
+    "password": "",
+    "useAuth": false,
+    "hostName": "localhost",
+    "port": "27017",
+    "logChannel": "716133775968305202"
 }

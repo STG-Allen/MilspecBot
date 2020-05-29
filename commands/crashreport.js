@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 module.exports = {
     name: 'crashreport',
     description: 'Display a how-to for crash reports.',
-    execute(message) {
+    execute(message, args) {
         let embed = new Discord.MessageEmbed()
         .setColor('0099ff')
         .addField('Crash-Reports', 'To obtain your crash report, please navigate to the `crash-reports` folder and open the latest file.')
