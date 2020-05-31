@@ -7,12 +7,14 @@ client.once('ready', () => {
     console.log('ready!');
 });
 
+module.exports = { client };
+
 client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
-	const command = require(`./commands/${file}`);
-	client.commands.set(command.name, command);
+    const command = require(`./commands/${file}`);
+    client.commands.set(command.name, command);
 }
 
 client.on('message', message => {
@@ -21,20 +23,10 @@ client.on('message', message => {
     const args = message.content.slice(prefix.length).split(' ');
     const command = args.shift().toLowerCase();
 
-    if (message.content === 'website') {
-        client.commands.get('website').execute(message);
-    }
+    let commandFile = client.commands.get(command);
 
-    if(message.content === 'crashreport') {
-        client.commands.get('crashreport').execute(message);
-    }
-
-    if(message.content === 'ip') {
-        client.commands.get('ip').execute(message);
-    }
-
-    if(command === 'ticket') {
-        client.commands.get("ticket").execute(client, message, args);
+    if (client.commands.get(command)) {
+        commandFile.execute(message, args)
     }
 })
 

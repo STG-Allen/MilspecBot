@@ -3,7 +3,7 @@ const Discord = require ('discord.js');
 module.exports = {
     name: 'website',
     description: 'Display the MilspecSG website',
-    execute(message) {
+    execute(message, args) {
         let embed = new Discord.MessageEmbed()
         .setAuthor("MilspecSG")
         .setColor('#0099ff')
