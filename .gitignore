@@ -107,4 +107,7 @@ dist
 config.json
 
 #node_modules file
-node_modules
+node_modules/
+
+#output directory
+build/
