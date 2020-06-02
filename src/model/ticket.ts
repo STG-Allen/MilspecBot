@@ -1,6 +1,8 @@
 import mongoose from 'mongoose'
+import type { Document } from 'mongoose';
 
-interface ITicketSchema {
+
+interface Iticket extends Document {
   number: string,
   description: string,
   comment: string[],
@@ -9,7 +11,7 @@ interface ITicketSchema {
   solution: string,
 }
 
-const ticketSchema = new mongoose.Schema<ITicketSchema>({
+const ticketSchema = new mongoose.Schema({
   number: String,
   description: String,
   comment: Array,
@@ -18,4 +20,4 @@ const ticketSchema = new mongoose.Schema<ITicketSchema>({
   solution: String
 });
 
-export default mongoose.model('Ticket', ticketSchema);
+export default mongoose.model<Iticket>('Ticket', ticketSchema);
