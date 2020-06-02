@@ -5,7 +5,10 @@ import type { Document } from 'mongoose';
 interface Iticket extends Document {
   number: string,
   description: string,
-  comment: string[],
+  comment: Array<{
+    comment: string,
+    author: string,
+  }>,
   createdUtc: Date,
   status: string,
   solution: string,
