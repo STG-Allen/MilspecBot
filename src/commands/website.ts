@@ -9,7 +9,7 @@ function execute(message: Discord.Message) {
     .setColor('#0099ff')
     .addField('URL', 'http://www.milspecsg.rocks/')
     .setFooter('Created by Milspec Dev Team');
-  message.channel.send({ embed });
+  message.channel.send({ embed }).catch(console.error);
 }
 
 export { name, description, execute }

@@ -31,7 +31,7 @@ function execute(message: Discord.Message) {
   .addField('Windows', windowsInstructions)
   .addField('Uploading', uploadInstructions.join(' '))
   .setFooter('Created by Milspec Dev Team');
-  return message.channel.send({ embed });
+  return message.channel.send({ embed }).catch(console.error);
 }
 
 

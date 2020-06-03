@@ -8,7 +8,7 @@ function execute(message: Discord.Message) {
     .setColor('0099ff')
     .addField('Server-IP', '<#701560784144171078>')
     .setFooter('Created by Milspec Dev Team');
-  message.channel.send({ embed });
+  message.channel.send({ embed }).catch(console.error);
 }
 
 export { name, description, execute }
