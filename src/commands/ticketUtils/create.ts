@@ -7,8 +7,8 @@ export default async function create(message: Discord.Message, ...args: string[]
   const embed = new Discord.MessageEmbed().setTitle('Ticket');
   const [, ...params] = args;
   const logTo = message.client.channels.cache.get(logChannel) as Discord.TextChannel;
-  const desc = params.join(' ');
-  if (desc.length < 10) {
+  const description = params.join(' ');
+  if (description.length < 10) {
     embed.setColor('RED');
     embed.addField('Error', 'Please specify a reason for creating the ticket.');
     return message.reply({ embed: embed });
@@ -21,7 +21,7 @@ export default async function create(message: Discord.Message, ...args: string[]
     // TODO: Wrap the awaited promises in a try catch block and handle errs.
     const ticket = await new Ticket({
       number: ticketCount,
-      description: desc,
+      description: description,
       comment: [],
       createdUtc: Date.now(),
       status: 'open',
@@ -35,7 +35,7 @@ export default async function create(message: Discord.Message, ...args: string[]
 
     embed.setColor('GREEN')
     embed.addField('Success', [
-      `You have created a ticket with description: \`\`${desc}\`\``,
+      `You have created a ticket with description: \`\`${description}\`\``,
       `with id \`\`${ticket.number}\`\`.`,
       `Please do not submit multiple tickets for the same issue.'`
     ]);
@@ -58,7 +58,7 @@ export default async function create(message: Discord.Message, ...args: string[]
     try {
       const ticket = await new Ticket({
         number: ticketCount,
-        description: desc,
+        description: description,
         comment: [],
         createdUtc: Date.now(),
         status: 'open',
@@ -73,7 +73,7 @@ export default async function create(message: Discord.Message, ...args: string[]
 
       embed.setColor('GREEN')
       embed.addField('Success', [
-        `You have created a ticket with description:\`\`${desc}.`,
+        `You have created a ticket with description:\`\`${description}.`,
         `Please do not submit multiple tickets for the same issue.`
       ]);
       message.author.send({ embed: embed }).catch(console.error);
