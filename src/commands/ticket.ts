@@ -7,40 +7,33 @@ import comment from './ticketUtils/comment';
 import close from './ticketUtils/close';
 import hold from './ticketUtils/hold';
 
-export default async function initTickets() {
+const {
+  userName,
+  password,
+  dbName,
+  port,
+  hostName,
+  useAuth,
+} = process.env;
 
-  const {
-    userName,
-    password,
-    dbName,
-    port,
-    hostName,
-    useAuth,
-  } = process.env;
+const dbUrlStr = useAuth ?
+  `mongodb://${userName}:${password}@${hostName}:${port}/${dbName}` :
+  `mongodb://localhost:27017/${dbName}`;
 
-  const dbUrlStr = useAuth ?
-    `mongodb://${userName}:${password}@${hostName}:${port}/${dbName}` :
-    `mongodb://localhost:27017/${dbName}`;
+// @ts-ignore
+const db = mongoose.connect(dbUrlStr, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 
-  // @ts-ignore
-  const db = await mongoose.connect(dbUrlStr, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  });
+const name = 'ticket';
+const description = 'Create, view and comment on tickets.';
 
+async function execute(message: Discord.Message, ...args: string[]) {
 
-  const name = 'ticket';
-  const description = 'Create, view and comment on tickets.';
+  message.delete().catch(console.error);
 
-  async function execute(message: Discord.Message, ...args: string[]) {
-    /**
-     * There's no need to await this promise or even care if it failed
-     * so just redirect any fail output that is likely caused by insufficient
-     * permissions to the console.
-     */
-    message.delete().catch(console.error);
-
-
+  try {
     switch(args[0]) {
       case 'create': return await create(message, ...args);
       case 'list': return await list(message, ...args);
@@ -50,8 +43,11 @@ export default async function initTickets() {
       case 'hold': return await hold(message, ...args);
       default: break;
     }
-
+  } catch(ex) {
+    console.trace(ex);
   }
-  return { name, description, execute }
+
 
 }
+
+export { name, description, execute }
