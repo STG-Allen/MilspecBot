@@ -1,13 +1,16 @@
 import fs from 'fs/promises';
+import path from 'path';
 import Discord from 'discord.js';
-
-import config from './config';
+import dotenv from 'dotenv';
 import type { Command } from './types';
 
+dotenv.config({
+  path: path.resolve('../', 'config.env')
+});
 
 async function main() {
 
-  const { prefix, token } = await config;
+  const { prefix, token } = process.env;
   const client = new Discord.Client();
   client.once('ready', () => console.log('ready!'));
 

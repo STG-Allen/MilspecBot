@@ -1,10 +1,9 @@
 import Discord from "discord.js";
-import config from '../../config';
 import User from '../../model/user';
 import Ticket from '../../model/ticket';
 
 export default async function create(message: Discord.Message, ...args: string[]) {
-  const { logChannel, prefix } = await config;
+  const { logChannel, prefix } = process.env;
   const embed = new Discord.MessageEmbed().setTitle('Ticket');
   const [, ...params] = args;
   const logTo = message.client.channels.cache.get(logChannel) as Discord.TextChannel;

@@ -1,8 +1,5 @@
 import Discord from 'discord.js';
 import mongoose from 'mongoose';
-
-import config from '../config';
-
 import create from './ticketUtils/create';
 import list from './ticketUtils/list';
 import info from './ticketUtils/info';
@@ -19,7 +16,7 @@ export default async function initTickets() {
     port,
     hostName,
     useAuth,
-  } = await config;
+  } = process.env;
 
   const dbUrlStr = useAuth ?
     `mongodb://${userName}:${password}@${hostName}:${port}/${dbName}` :
