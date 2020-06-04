@@ -54,3 +54,6 @@ export const ticketCreationFailure = outdent`
 export const informOfTicketCreation = (n: string, prefix: string)=> outdent`
   Created a new ticket with ID: \`${n}\`.
   You can now view this ticket with \`${prefix}ticket info ${n}\``
+
+export const informOfHold = (id: string)=> outdent`
+  Your ticket with ID \`${id}\` has been put on hold.`
