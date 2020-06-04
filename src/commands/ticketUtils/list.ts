@@ -1,57 +1,50 @@
 import Discord from "discord.js";
 import User from '../../model/user';
 
+import {
+  notInGuild,
+  noActiveTickets,
+  informOfDMList,
+  permissionErrorList
+} from '../messages/ticket.messages';
+
 export default async function list(message: Discord.Message, ...args: string[]) {
-  const embed = new Discord.MessageEmbed().setTitle('Ticket');
+  const embed = new Discord.MessageEmbed().setTitle('Ticket').setColor('RED');
   const [, ...params] = args;
+  const authorIsStaff = message.member.roles.cache.some(r => r.name === 'Staff');
 
-  let userId = params[0] ?? 'self';
+  const userId = message.mentions.users.first()?.id ??
+    params[0] ??
+    message.author.id;
 
-  // TODO: Explore a String#match solution like userId = userId.match(/\d/g);
-  if (userId?.startsWith('<@') && userId?.endsWith('>')) {
-    userId = userId.slice(2, -1);
-    if (userId?.startsWith('!')) {
-      userId = userId.slice(1);
+  if (!message.guild) {
+    embed.addField('ERROR', notInGuild);
+    return message.channel.send({ embed }).catch(console.error);
+  }
+
+  if (!authorIsStaff) {
+    // Allow users to view their own ticket list but not that of others.
+    if (userId !== message.author.id) {
+      embed.addField('ERROR', permissionErrorList);
+      return message.channel.send({ embed }).catch(console.error);
     }
   }
 
-  const userIsStaff = message.member.roles.cache.some(r => r.name === 'Staff');
-
-  if ((message.guild && userIsStaff) || (userId === 'self') || !params[0]) {
-
-    if (!params[0] || params[0] === 'self') {
-      userId = message.author.id
+  try {
+    const result = await User.findOne({ discordId: userId });
+    embed.setColor('GREEN');
+    if (!result) {
+      embed.addField(result.userName, noActiveTickets);
+      return message.author.send({ embed }).catch(console.error);
     }
-    try {
-      const result = await User.findOne({ discordId: userId });
-      embed.setColor('GREEN');
-      if (!result) {
-        embed.addField(result.userName, 'Does not have any active tickets!')
-        message.author.send({ embed })
-      }
-      if (message.guild !== null) {
-        message.channel.send([
-          'Please check your DM\'s.',
-          'I sent you a list of tickets pertaining to the specified user.'
-        ]);
-      }
-      embed.setTitle(result.userName + '\'s Tickets')
-      embed.addField('Tickets:', result.ticketNums)
-      return message.author.send({ embed })
-    } catch(ex) {
-      console.trace(ex);
-    }
-  } else {
-    embed.setColor('RED')
     if (message.guild !== null) {
-      embed.addField('ERROR', "You do not have permission for this command!")
-    } else {
-      embed.addField('ERROR', 'You must be in a discord guild to run this command!')
+      message.channel.send(informOfDMList);
     }
-    message.channel.send({ embed })
+    embed.setTitle(result.userName + '\'s Tickets')
+    embed.addField('Tickets:', result.ticketNums)
+    return message.author.send({ embed })
+  } catch(ex) {
+    console.trace(ex);
   }
-
-
-
 
 }

@@ -43,30 +43,39 @@ export const ticketCreationSuccess = (desc: string, id: string)=> outdent`
   ${desc}
   \`\`\`
   Your ticket number is \`${id}\`.
-  Please do not submit mutliple tickets for the same issue.`
+  Please do not submit mutliple tickets for the same issue.`;
 
 export const newUserEntry = (whom: string)=> outdent`
-  Creating a new entry for ${whom} in the database!`
+  Creating a new entry for ${whom} in the database!`;
 
 export const ticketCreationFailure = outdent`
-  We were unable to create your ticket, please contact an administrator!`
+  We were unable to create your ticket, please contact an administrator!`;
 
 export const informOfTicketCreation = (n: string, prefix: string)=> outdent`
   Created a new ticket with ID: \`${n}\`.
-  You can now view this ticket with \`${prefix}ticket info ${n}\``
+  You can now view this ticket with \`${prefix}ticket info ${n}\``;
 
 export const informOfHold = (id: string)=> outdent`
-  Your ticket with ID \`${id}\` has been put on hold.`
+  Your ticket with ID \`${id}\` has been put on hold.`;
 
 export const commentDisplay = (comment: string, author: string)=> outdent`
   ${comment}
 
-  Author: ${author}`
+  Author: ${author}`;
 
 export const informOfDM = outdent`
-  Please check your DM's, I have sent you a message regarding that ticket!`
+  Please check your DM's, I have sent you a message regarding that ticket!`;
 
 export const ticketNotFound = outdent`
   Your ticket could not be found!
   If your ticket ID is correct and the issue persists,
-  please contact an administrator!`
+  please contact an administrator!`;
+
+export const noActiveTickets = 'Does not have any active tickets.';
+
+export const informOfDMList = outdent`
+  Please check your DM's.
+  I have sent you a list of tickets pertaining to the specific user.`;
+
+export const permissionErrorList = outdent`
+  You are not permitted to view tickets belonging to others.`
