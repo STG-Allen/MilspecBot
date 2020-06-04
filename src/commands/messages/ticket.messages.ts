@@ -57,3 +57,16 @@ export const informOfTicketCreation = (n: string, prefix: string)=> outdent`
 
 export const informOfHold = (id: string)=> outdent`
   Your ticket with ID \`${id}\` has been put on hold.`
+
+export const commentDisplay = (comment: string, author: string)=> outdent`
+  ${comment}
+
+  Author: ${author}`
+
+export const informOfDM = outdent`
+  Please check your DM's, I have sent you a message regarding that ticket!`
+
+export const ticketNotFound = outdent`
+  Your ticket could not be found!
+  If your ticket ID is correct and the issue persists,
+  please contact an administrator!`
