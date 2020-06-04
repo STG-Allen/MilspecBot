@@ -2,6 +2,8 @@ import Discord from "discord.js";
 import Ticket from '../../model/ticket';
 import User from '../../model/user';
 
+import { authorIsStaff } from '../common';
+
 import {
   permissionError,
   notInGuild,
@@ -12,11 +14,9 @@ import {
 
 export default async function hold(message: Discord.Message, ...args: string[]) {
   const embed = new Discord.MessageEmbed().setTitle('Ticket').setColor('RED');
-  const authorIsStaff = message.member.roles.cache.some(role => role.name === 'Staff');
-
   const [, ticketId] = args;
 
-  if (!(message.guild && authorIsStaff)) {
+  if (!(message.guild && authorIsStaff(message))) {
     embed.addField('ERROR', message.guild ? permissionError : notInGuild);
     return message.channel.send({ embed }).catch(console.error);
   }

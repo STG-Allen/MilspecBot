@@ -3,6 +3,8 @@ import Ticket from '../../model/ticket';
 import Comment from '../../model/comment';
 import User from '../../model/user';
 
+import { authorIsStaff } from '../common';
+
 import {
   noComment,
   unspecifiedTicket,
@@ -17,9 +19,7 @@ export default async function comment(message: Discord.Message, ...args: string[
   const embed = new Discord.MessageEmbed().setTitle('Ticket').setColor('RED');
   const [, ticketId, commentId, ...rest] = args;
 
-  const authorIsStaff = message.member.roles.cache.some(role => role.name === 'Staff');
-
-  if (!(message.guild && authorIsStaff)) {
+  if (!(message.guild && authorIsStaff(message))) {
     embed.addField('ERROR', message.guild ? permissionError : notInGuild);
     return message.channel.send({ embed }).catch(console.error);
   }

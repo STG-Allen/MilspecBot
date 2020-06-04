@@ -1,6 +1,8 @@
 import Discord from "discord.js";
 import User from '../../model/user';
 
+import { authorIsStaff } from '../common';
+
 import {
   notInGuild,
   noActiveTickets,
@@ -11,7 +13,6 @@ import {
 export default async function list(message: Discord.Message, ...args: string[]) {
   const embed = new Discord.MessageEmbed().setTitle('Ticket').setColor('RED');
   const [, ...params] = args;
-  const authorIsStaff = message.member.roles.cache.some(r => r.name === 'Staff');
 
   const userId = message.mentions.users.first()?.id ??
     params[0] ??
@@ -22,7 +23,7 @@ export default async function list(message: Discord.Message, ...args: string[]) 
     return message.channel.send({ embed }).catch(console.error);
   }
 
-  if (!authorIsStaff) {
+  if (!authorIsStaff(message)) {
     // Allow users to view their own ticket list but not that of others.
     if (userId !== message.author.id) {
       embed.addField('ERROR', permissionErrorList);
