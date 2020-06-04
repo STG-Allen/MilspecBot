@@ -12,7 +12,7 @@ import {
 } from '../messages/ticket.messages';
 
 export default async function close(message: Discord.Message, ...args: string[]) {
-  const embed = new Discord.MessageEmbed().setTitle('Ticket');
+  const embed = new Discord.MessageEmbed().setTitle('Ticket').setColor('RED');
   const authorIsStaff = message.member.roles.cache.some(role => role.name === 'Staff');
 
   const [, ticketId] = args;
@@ -20,13 +20,11 @@ export default async function close(message: Discord.Message, ...args: string[])
   const solution = solutionParts.join(' ');
 
   if (!(message.guild && authorIsStaff)) {
-    embed.setColor('RED')
     embed.addField('ERROR', message.guild ? permissionError : notInGuild);
     return message.channel.send({ embed }).catch(console.error);
   }
 
   if (!ticketId) {
-    embed.setColor('RED')
     embed.addField('ERROR', unspecifiedTicket('close'));
     return message.channel.send({ embed }).catch(console.error);
   }
@@ -47,20 +45,20 @@ export default async function close(message: Discord.Message, ...args: string[])
 
     embed.setColor('GREEN');
     embed.addField('Closed Ticket', ticket.number);
-
     message.channel.send({ embed }).catch(console.error);
-
-    const user = await User.findOne({ 'ticketNums': { $in: [ticketId] } });
-    const discordUser = message.client.users.cache.get(user.discordId)
-
-    return discordUser.send(informOfClosure(ticketId, solution)).catch(console.error);
 
   } catch(ex) {
     console.trace(ex);
-    embed.setColor('RED');
     embed.addField('Error', genericActionError('close', ticketId));
     return message.reply(embed);
   }
 
+  try {
+    const user = await User.findOne({ 'ticketNums': { $in: [ticketId] } });
+    const discordUser = message.client.users.cache.get(user.discordId)
+    return discordUser.send(informOfClosure(ticketId, solution)).catch(console.error);
+  } catch(ex) {
+    console.trace(ex);
+  }
 
 }

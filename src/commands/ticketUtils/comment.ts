@@ -3,66 +3,60 @@ import Ticket from '../../model/ticket';
 import Comment from '../../model/comment';
 import User from '../../model/user';
 
+import {
+  noComment,
+  unspecifiedTicket,
+  genericActionError,
+  commentSuccess,
+  informOfComment,
+  permissionError,
+  notInGuild,
+} from '../messages/ticket.messages';
+
 export default async function comment(message: Discord.Message, ...args: string[]) {
-  const embed = new Discord.MessageEmbed().setTitle('Ticket');
+  const embed = new Discord.MessageEmbed().setTitle('Ticket').setColor('RED');
   const [, ticketId, commentId, ...rest] = args;
 
-  if (message.guild &&
-    message.member.roles.cache.some(role => role.name === 'Staff')) {
+  const authorIsStaff = message.member.roles.cache.some(role => role.name === 'Staff');
 
-    if (!ticketId) {
-      embed.setColor('RED')
-      embed.addField('ERROR', 'Please specify a ticket to comment upon!')
-      return message.channel.send({ embed: embed })
-    }
-    if (!commentId) {
-      embed.setColor('RED')
-      embed.addField('ERROR', 'Please specify a comment!')
-      return message.channel.send({ embed: embed });
-    }
+  if (!(message.guild && authorIsStaff)) {
+    embed.addField('ERROR', message.guild ? permissionError : notInGuild);
+    return message.channel.send({ embed }).catch(console.error);
+  }
 
-    const comment = rest.join(' ');
-    const commentModel = new Comment({ comment, author: message.author.tag });
+  if (!ticketId) {
+    embed.addField('ERROR', unspecifiedTicket('comment upon'));
+    return message.channel.send({ embed }).catch(console.error);
+  }
 
-    try {
-      await Ticket.findOneAndUpdate({ number: ticketId }, {
-        $addToSet: { comment: commentModel }
-      });
-    } catch(ex) {
-      console.trace(ex);
-      embed.setColor('RED');
-      embed.setDescription([
-        'Something went catastrophically wrong while adding your comment.',
-        'Please contact an administrator if the problem persists.'
-      ]);
-      return message.channel.send({ embed });
-    }
+  if (!commentId) {
+    embed.addField('ERROR', noComment);
+    return message.channel.send({ embed }).catch(console.error);
+  }
 
-    embed.setColor('GREEN')
-    embed.addField('Update', [
-      `Comment \`\`${comment}\`\` successfully added to the ticket with id ${ticketId}`
-    ]);
-    message.channel.send({ embed })
+  const comment = rest.join(' ');
+  const commentModel = new Comment({ comment, author: message.author.tag });
 
-    try {
-      const user = await User.findOne({ 'ticketNums': { $in: [ticketId] } });
-      const discordUser = message.client.users.cache.get(user.discordId)
-      return discordUser.send([
-        `Your ticket with ID \`\`${ticketId}\`\` has been updated with comment:`,
-        '``' + comment + '``'
-      ]);
-    } catch(ex) {
-      console.trace(ex);
-    }
+  try {
+    await Ticket.findOneAndUpdate({ number: ticketId }, {
+      $addToSet: { comment: commentModel }
+    });
+  } catch(ex) {
+    console.trace(ex);
+    embed.setDescription(genericActionError('comment on', ticketId));
+    return message.channel.send({ embed });
+  }
 
-  } else {
-    embed.setColor('RED')
-    if (message.guild) {
-      embed.addField('ERROR', "You do not have permission for this command!")
-    } else {
-      embed.addField('ERROR', 'You must be in a discord guild to run this command!')
-    }
-    return message.channel.send({ embed: embed })
+  embed.setColor('GREEN');
+  embed.addField('Update', commentSuccess(comment, ticketId));
+  message.channel.send({ embed }).catch(console.error)
+
+  try {
+    const user = await User.findOne({ 'ticketNums': { $in: [ticketId] } });
+    const discordUser = message.client.users.cache.get(user.discordId)
+    return discordUser.send(informOfComment(comment, ticketId));
+  } catch(ex) {
+    console.trace(ex);
   }
 
 
