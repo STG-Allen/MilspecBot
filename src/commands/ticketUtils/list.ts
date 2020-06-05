@@ -14,7 +14,7 @@ export default async function list(message: Discord.Message, ...args: string[]) 
   const embed = new Discord.MessageEmbed().setTitle('Ticket').setColor('RED');
   const [, ...params] = args;
 
-  const userId = message.mentions.users.first()?.id ??
+  const userId = message.mentions?.users?.first()?.id ??
     params[0] ??
     message.author.id;
 
