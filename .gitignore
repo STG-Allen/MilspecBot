@@ -102,3 +102,16 @@ dist
 
 # TernJS port file
 .tern-port
+
+# config file
+config.json
+
+#node_modules file
+node_modules/
+
+#output directory
+build/
+
+# critical env files
+.env
+production.env
